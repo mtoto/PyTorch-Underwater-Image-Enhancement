@@ -41,17 +41,20 @@ def main(checkpoint, imgs_path, result_path):
 
     starttime = datetime.datetime.now()
     for imgdir in ori_dirs:
-        img_name = (imgdir.split('/')[-1]).split('.')[0]
-        img = Image.open(imgdir)
-        inp = testtransform(img).unsqueeze(0)
-        inp = inp.to(device)
-        out = model(inp)
+        if imgdir.endswith('.JPG') or imgdir.endswith('.jpg') or imgdir.endswith('.png')\
+                or imgdir.endswith('.PNG') or imgdir.endswith('.jpeg') or imgdir.endswith('.JPEG')\
+                or imgdir.endswith('.HEIC'):
+            img_name = (imgdir.split('/')[-1]).split('.')[0]
+            img = Image.open(imgdir)
+            inp = testtransform(img).unsqueeze(0)
+            inp = inp.to(device)
+            out = model(inp)
 
-        corrected = unloader(out.cpu().squeeze(0))
-        dir = '{}/results_{}'.format(result_path, checkpoint['epoch'])
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        corrected.save(dir+'/{}corrected.png'.format(img_name))
+            corrected = unloader(out.cpu().squeeze(0))
+            dir = '{}/results_{}'.format(result_path, checkpoint['epoch'])
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+            corrected.save(dir+'/{}-corrected.png'.format(img_name))
     endtime = datetime.datetime.now()
     print(endtime-starttime)
 
@@ -61,9 +64,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--checkpoint', help='checkpoints path', required=True)
     parser.add_argument(
-            '--images', help='test images folder', default='./test_img/')
+            '--images', help='test images folder', default='./test_img/alexis_test/')
     parser.add_argument(
-            '--result', help='results folder', default='./results/')
+            '--result', help='results folder', default='./results/alexis_test/')
     args = parser.parse_args()
     checkpoint = args.checkpoint
     imgs = args.images
